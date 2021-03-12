@@ -37,4 +37,11 @@ class DiscussionFilterer extends AbstractFilterer
     {
         return $this->discussions->query()->select('discussions.*')->whereVisibleTo($actor);
     }
+
+    protected function mutateFilter($filterState, $criteria)
+    {
+        $filterState->setDefaultSort(['lastPostedAt' => 'desc']);
+
+        parent::mutateFilter($filterState, $criteria);
+    }
 }

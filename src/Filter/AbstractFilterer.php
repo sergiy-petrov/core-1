@@ -39,6 +39,13 @@ abstract class AbstractFilterer
 
     abstract protected function getQuery(User $actor): Builder;
 
+    protected function mutateFilter($filterState, $criteria)
+    {
+        foreach ($this->filterMutators as $mutator) {
+            $mutator($filterState, $criteria);
+        }
+    }
+
     /**
      * @param QueryCriteria $criteria
      * @param mixed|null $limit
@@ -76,9 +83,7 @@ abstract class AbstractFilterer
         }
         // END DEPRECATED BC LAYER
 
-        foreach ($this->filterMutators as $mutator) {
-            $mutator($query, $actor, $criteria->query, $criteria->sort);
-        }
+        $this->mutateFilter($filterState, $criteria);
 
         // Execute the filter query and retrieve the results. We get one more
         // results than the user asked for, so that we can say if there are more
