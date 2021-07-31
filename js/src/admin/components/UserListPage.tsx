@@ -100,7 +100,7 @@ export default class UserListPage extends AdminPage {
     const columns: (ColumnData & { itemName: string })[] = this.columns().toArray();
 
     return [
-      <p class="UserListPage-totalUsers">{app.translator.trans('core.admin.users.total_users', { count: this.userCount })}</p>,
+      this.infoHeader(),
       <section
         class={classList(['UserListPage-grid', this.isLoadingPage ? 'UserListPage-grid--loadingPage' : 'UserListPage-grid--loaded'])}
         style={{ '--columns': columns.length }}
@@ -144,6 +144,14 @@ export default class UserListPage extends AdminPage {
       </section>,
       this.pagination(),
     ];
+  }
+
+  protected infoHeader() {
+    return (
+      <aside class="UserListPage-infoHeader">
+        <p class="UserListPage-totalUsers">{app.translator.trans('core.admin.users.total_users', { count: this.userCount })}</p>
+      </aside>
+    );
   }
 
   protected pagination(): Mithril.Children {
