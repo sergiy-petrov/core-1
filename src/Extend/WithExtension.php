@@ -16,17 +16,25 @@ use Illuminate\Contracts\Container\Container;
 class WithExtension implements ExtenderInterface
 {
     /**
-     * @var string
+     * @var string[]|array
      */
-    protected $extension;
+    protected $extensions;
     /**
      * @var callable
      */
     protected $callable;
 
-    public function __construct(string $extension, callable $callable)
+    /**
+     * WithExtension constructor.
+     *
+     * @param string|string[] $extension: The extension or extensions that need to be checked whether they are enabled
+     *                                   before executing the extenders inside the callable.
+     * @param callable $callable: A callable that returns one or an array of extenders to be executed when the given
+     *                          extension(s) are enabled.
+     */
+    public function __construct($extension, callable $callable)
     {
-        $this->extension = $extension;
+        $this->extensions = (array) $extension;
         $this->callable = $callable;
     }
 
@@ -35,15 +43,21 @@ class WithExtension implements ExtenderInterface
         /** @var ExtensionManager $extensions */
         $extensions = $container->make(ExtensionManager::class);
 
-        $id = Extension::nameToId($this->extension);
+        $enabled = true;
 
-        if ($extensions->isEnabled($id)) {
-            $extenders = (array) $this->callable();
+        foreach ($this->extensions as $extension) {
+            $id = Extension::nameToId($extension);
 
-            /** @var ExtenderInterface $extender */
-            foreach ($extenders as $extender) {
-                $extender->extend($container, $extension);
-            }
+            $enabled = $enabled && $extensions->isEnabled($id);
+        }
+
+        if (! $enabled) return;
+
+        $extenders = (array) $this->callable();
+
+        /** @var ExtenderInterface $extender */
+        foreach ($extenders as $extender) {
+            $extender->extend($container, $extension);
         }
     }
 }
