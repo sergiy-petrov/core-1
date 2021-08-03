@@ -51,7 +51,9 @@ class WithExtension implements ExtenderInterface
             $enabled = $enabled && $extensions->isEnabled($id);
         }
 
-        if (! $enabled) return;
+        if (! $enabled) {
+            return;
+        }
 
         $extenders = (array) $this->callable();
 
