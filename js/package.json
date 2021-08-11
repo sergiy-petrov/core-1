@@ -10,6 +10,7 @@
     "color-thief-browser": "^2.0.2",
     "dayjs": "^1.10.4",
     "expose-loader": "^1.0.3",
+    "focus-trap": "^6.6.0",
     "jquery": "^3.6.0",
     "jquery.hotkeys": "^0.1.0",
     "mithril": "^2.0.4",
