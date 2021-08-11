@@ -1,4 +1,5 @@
 import Component from '../Component';
+import { createFocusTrap } from '../utils/focusTrap';
 
 /**
  * The `ModalManager` component manages a modal dialog. Only one modal dialog
@@ -6,6 +7,11 @@ import Component from '../Component';
  * overwrite the previous one.
  */
 export default class ModalManager extends Component {
+  /**
+   * @type {import('../utils/focusTrap').FocusTrap | undefined}
+   */
+  focusTrap;
+
   view() {
     const modal = this.attrs.state.modal;
 
@@ -23,6 +29,9 @@ export default class ModalManager extends Component {
     );
   }
 
+  /**
+   * @param {import('mithril').VnodeDOM<{}, this>} vnode
+   */
   oncreate(vnode) {
     super.oncreate(vnode);
 
@@ -30,6 +39,12 @@ export default class ModalManager extends Component {
     // DOM-based Bootstrap JavaScript code triggered the closing of the modal,
     // e.g. via ESC key or a click on the modal backdrop.
     this.$().on('hidden.bs.modal', this.attrs.state.close.bind(this.attrs.state));
+
+    this.focusTrap = createFocusTrap(this.element);
+  }
+
+  onupdate(vnode) {
+    super.onupdate(vnode);
   }
 
   animateShow(readyCallback) {
@@ -50,9 +65,13 @@ export default class ModalManager extends Component {
         keyboard: dismissible,
       })
       .modal('show');
+
+    if (this.focusTrap) this.focusTrap.activate();
   }
 
   animateHide() {
     this.$().modal('hide');
+
+    if (this.focusTrap) this.focusTrap.deactivate();
   }
 }
