@@ -1,5 +1,8 @@
 import Component from '../Component';
 import { createFocusTrap } from '../utils/focusTrap';
+import { tabbable } from 'tabbable';
+
+window.tabbable = tabbable;
 
 /**
  * The `ModalManager` component manages a modal dialog. Only one modal dialog
@@ -12,19 +15,20 @@ export default class ModalManager extends Component {
    */
   focusTrap;
 
+  modalShown = false;
+
   view() {
     const modal = this.attrs.state.modal;
 
     return (
       <div className="ModalManager modal fade">
-        {modal
-          ? modal.componentClass.component({
-              ...modal.attrs,
-              animateShow: this.animateShow.bind(this),
-              animateHide: this.animateHide.bind(this),
-              state: this.attrs.state,
-            })
-          : ''}
+        {!!modal &&
+          modal.componentClass.component({
+            ...modal.attrs,
+            animateShow: this.animateShow.bind(this),
+            animateHide: this.animateHide.bind(this),
+            state: this.attrs.state,
+          })}
       </div>
     );
   }
@@ -40,15 +44,28 @@ export default class ModalManager extends Component {
     // e.g. via ESC key or a click on the modal backdrop.
     this.$().on('hidden.bs.modal', this.attrs.state.close.bind(this.attrs.state));
 
+    console.log(this.element);
+
     this.focusTrap = createFocusTrap(this.element);
   }
 
   onupdate(vnode) {
     super.onupdate(vnode);
+
+    requestAnimationFrame(() => {
+      try {
+        if (this.modalShown) this.focusTrap.activate?.();
+        else this.focusTrap.deactivate?.();
+      } catch {
+        // We can expect errors to occur here due to the nature of mithril rendering
+      }
+    });
   }
 
   animateShow(readyCallback) {
     const dismissible = !!this.attrs.state.modal.componentClass.isDismissible;
+
+    this.modalShown = true;
 
     // If we are opening this modal while another modal is already open,
     // the shown event will not run, because the modal is already open.
@@ -65,13 +82,11 @@ export default class ModalManager extends Component {
         keyboard: dismissible,
       })
       .modal('show');
-
-    this.focusTrap.activate?.();
   }
 
   animateHide() {
     this.$().modal('hide');
 
-    this.focusTrap.deactivate?.();
+    this.modalShown = false;
   }
 }
