@@ -66,12 +66,12 @@ export default class ModalManager extends Component {
       })
       .modal('show');
 
-    if (this.focusTrap) this.focusTrap.activate();
+    this.focusTrap.activate?.();
   }
 
   animateHide() {
     this.$().modal('hide');
 
-    if (this.focusTrap) this.focusTrap.deactivate();
+    this.focusTrap.deactivate?.();
   }
 }
