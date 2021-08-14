@@ -1,8 +1,5 @@
 import Component from '../Component';
 import { createFocusTrap } from '../utils/focusTrap';
-import { tabbable } from 'tabbable';
-
-window.tabbable = tabbable;
 
 /**
  * The `ModalManager` component manages a modal dialog. Only one modal dialog
@@ -43,8 +40,6 @@ export default class ModalManager extends Component {
     // DOM-based Bootstrap JavaScript code triggered the closing of the modal,
     // e.g. via ESC key or a click on the modal backdrop.
     this.$().on('hidden.bs.modal', this.attrs.state.close.bind(this.attrs.state));
-
-    console.log(this.element);
 
     this.focusTrap = createFocusTrap(this.element);
   }
