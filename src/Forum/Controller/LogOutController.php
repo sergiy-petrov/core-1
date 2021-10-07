@@ -71,7 +71,7 @@ class LogOutController implements RequestHandlerInterface
         $this->view = $view;
         $this->url = $url;
 
-        $this->middleware('invalidateCache');
+        $this->middleware(new \Flarum\Http\Middleware\InvalidateCache());
     }
 
     /**
