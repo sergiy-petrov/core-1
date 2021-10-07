@@ -70,6 +70,8 @@ class LogOutController implements RequestHandlerInterface
         $this->rememberer = $rememberer;
         $this->view = $view;
         $this->url = $url;
+
+        $this->middleware('invalidateCache');
     }
 
     /**
